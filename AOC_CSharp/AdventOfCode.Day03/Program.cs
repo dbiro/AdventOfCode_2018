@@ -108,7 +108,7 @@ namespace AdventOfCode.Day03
             {
                 isClaimIntersected = false;
 
-                int row = fabricRows - claim.Top - claim.Height;
+                int row = claim.Top;
                 int column = claim.Left;
 
                 for (int i = row; i < row + claim.Height; i++)
