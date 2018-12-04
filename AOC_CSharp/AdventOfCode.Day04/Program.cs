@@ -15,13 +15,18 @@ namespace AdventOfCode.Day04
             {
                 GuardId = guradId;
                 FallsAsleepAt = new List<int>();
-                AsleepsAt = new List<int>();
+                SleepsAt = new List<int>();
                 WakeUpsAt = new List<int>();
             }
             public int GuardId { get; }
             public List<int> FallsAsleepAt { get; }
-            public List<int> AsleepsAt { get; }
+            public List<int> SleepsAt { get; }
             public List<int> WakeUpsAt { get; }
+
+            public override string ToString()
+            {
+                return GuardId.ToString();
+            }
         }
 
         private static ImmutableList<GuardRecord> ReadInput()
@@ -45,7 +50,7 @@ namespace AdventOfCode.Day04
             foreach (var line in orderedRecords)
             {
                 if (line.record.StartsWith("Guard"))
-                {                    
+                {
                     string[] parts = line.record.Split(" ");
                     int guardId = int.Parse(parts[1].Substring(1, parts[1].Length - 1));
                     if (!guardRecords.ContainsKey(guardId))
@@ -67,7 +72,7 @@ namespace AdventOfCode.Day04
                     int lastAsleepAt = currentGuardRecord.FallsAsleepAt[currentGuardRecord.FallsAsleepAt.Count - 1];
                     for (int j = lastAsleepAt; j < line.timestamp.Minute; j++)
                     {
-                        currentGuardRecord.AsleepsAt.Add(j);
+                        currentGuardRecord.SleepsAt.Add(j);
                     }
                     currentGuardRecord.WakeUpsAt.Add(line.timestamp.Minute);
                 }
@@ -80,35 +85,51 @@ namespace AdventOfCode.Day04
             return ImmutableList.Create(guardRecords.Values.ToArray());
         }
 
-        static void Main(string[] args)
+        static int SolveFirst(IEnumerable<GuardRecord> records)
+        {            
+            var mostSleepyGuardRecord = records.OrderByDescending(r => r.SleepsAt.Sum()).First();
+            var sleeps = mostSleepyGuardRecord.SleepsAt.GroupBy(a => a).ToDictionary(a => a.Key, a => a.Count());
+            var mostSleepyMinute = sleeps.OrderByDescending(s => s.Value).First();
+
+            return mostSleepyMinute.Key * mostSleepyGuardRecord.GuardId;
+        }
+
+        static int SolveSecond(IEnumerable<GuardRecord> records)
         {
-            var orderedRecords = ReadInput();
+            int mostSleepyAt = 0;
+            int mostSleepyAtCount = 0;
+            int guardId = 0;
 
-            int mostAsleepAt = -2;
-            int guardId = -1;
-
-            foreach (var record in orderedRecords)
-            {
-                int currentMostAsleepCount = 0;
-                int currentMostAsleepAt = 0;
-                foreach (var g in record.AsleepsAt.GroupBy(a => a))
+            foreach (var record in records)
+            {                
+                if (record.SleepsAt.Count == 0)
                 {
-                    int count = g.Count();
-                    if (currentMostAsleepCount < count)
-                    {
-                        currentMostAsleepCount = count;
-                        currentMostAsleepAt = g.Key;
-                    }
+                    continue;
                 }
 
-                if (mostAsleepAt < currentMostAsleepAt)
+                var groupedSleeps = record.SleepsAt.GroupBy(a => a).ToDictionary(a => a.Key, a => a.Count());
+                KeyValuePair<int, int> mostSleepyMinute = groupedSleeps.OrderByDescending(s => s.Value).First();
+                                
+                if (mostSleepyAtCount < mostSleepyMinute.Value)
                 {
-                    mostAsleepAt = currentMostAsleepAt;
+                    mostSleepyAt = mostSleepyMinute.Key;
+                    mostSleepyAtCount = mostSleepyMinute.Value;
                     guardId = record.GuardId;
                 }
             }
 
-            Console.WriteLine(mostAsleepAt * guardId);
+            return mostSleepyAt * guardId;
+        }
+
+        static void Main(string[] args)
+        {
+            var orderedRecords = ReadInput();
+
+            int firstResult = SolveFirst(orderedRecords);
+            Console.WriteLine(firstResult);
+
+            int secondResult = SolveSecond(orderedRecords);
+            Console.WriteLine(secondResult);
         }
     }
 }
