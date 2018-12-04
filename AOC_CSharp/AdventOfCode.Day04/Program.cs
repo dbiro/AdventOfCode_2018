@@ -89,19 +89,21 @@ namespace AdventOfCode.Day04
 
             foreach (var record in orderedRecords)
             {
-                int currentMostAsleep = 0;
+                int currentMostAsleepCount = 0;
+                int currentMostAsleepAt = 0;
                 foreach (var g in record.AsleepsAt.GroupBy(a => a))
                 {
                     int count = g.Count();
-                    if (currentMostAsleep < count)
+                    if (currentMostAsleepCount < count)
                     {
-                        currentMostAsleep = count;
+                        currentMostAsleepCount = count;
+                        currentMostAsleepAt = g.Key;
                     }
                 }
 
-                if (mostAsleepAt < currentMostAsleep)
+                if (mostAsleepAt < currentMostAsleepAt)
                 {
-                    mostAsleepAt = currentMostAsleep;
+                    mostAsleepAt = currentMostAsleepAt;
                     guardId = record.GuardId;
                 }
             }
