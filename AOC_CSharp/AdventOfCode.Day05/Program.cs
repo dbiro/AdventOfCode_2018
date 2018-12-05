@@ -16,8 +16,7 @@ namespace AdventOfCode.Day05
             {
                 if (canReact(polymerList[i], polymerList[i + 1]))
                 {
-                    polymerList.RemoveAt(i + 1);
-                    polymerList.RemoveAt(i);
+                    polymerList.RemoveRange(i, 2);
                     if (i > 0)
                     {
                         i--;
