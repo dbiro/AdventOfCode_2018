@@ -55,10 +55,11 @@ namespace AdventOfCode.Day06
         }
 
         static int SolveFirst(IEnumerable<Point> points)
-        {
-            int m = Math.Max(points.Select(p => p.X).Max(), points.Select(p => p.Y).Max());
-            int maxX = m;
-            int maxY = m;
+        {            
+            int maxX = points.Select(p => p.X).Max();
+            int maxY = points.Select(p => p.Y).Max();
+            int minX = points.Select(p => p.X).Min();
+            int minY = points.Select(p => p.Y).Min();
 
             var pointsById = points.ToDictionary(p => p.Id);
 
@@ -69,9 +70,9 @@ namespace AdventOfCode.Day06
                 grid[p.X, p.Y] = p.Id;
             }
                         
-            for (int i = 0; i <= maxX; i++)
+            for (int i = minX; i <= maxX; i++)
             {
-                for (int j = 0; j <= maxY; j++)
+                for (int j = minY; j <= maxY; j++)
                 {
                     if (grid[i, j] != 0)
                     {
@@ -81,8 +82,7 @@ namespace AdventOfCode.Day06
 
                     Dictionary<int, List<Point>> pointsByDistance = points                        
                         .GroupBy(p => p.DistanceFrom(Point.Create(i, j)))
-                        .ToDictionary(g => g.Key, g => g.ToList());
-                    pointsByDistance.Remove(0);
+                        .ToDictionary(g => g.Key, g => g.ToList());                    
 
                     List<Point> pointsWithMinimumDistance = pointsByDistance[pointsByDistance.Keys.Min()];
 
@@ -95,7 +95,7 @@ namespace AdventOfCode.Day06
                 }
             }
 
-            var pointWithFiniteAreas = points.Where(p => !p.ClosestPoints.Any(cp => cp.X == 0 || cp.X == maxX || cp.Y == maxY || cp.Y == 0));
+            var pointWithFiniteAreas = points.Where(p => !p.ClosestPoints.Any(cp => cp.X == minX || cp.X == maxX || cp.Y == maxY || cp.Y == minY));
             return pointWithFiniteAreas.Max(p => p.ClosestPoints.Count);
         }
 
