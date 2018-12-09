@@ -122,7 +122,6 @@ namespace AdventOfCode.Day07
             var steps = stepsInput.OrderBy(s => s.Name).ToList();
             int stepsCount = steps.Count();
             List<Step> finishedSteps = new List<Step>(stepsCount);
-            Queue<int> availableSteps = new Queue<int>();
 
             int totalSeconds = 0;
             for (int time = 0; ; time++)
