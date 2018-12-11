@@ -93,25 +93,25 @@ namespace AdventOfCode.Day08
     }
     class Tree
     {
-        public Node Root { get; private set; }
+        private Node root;
 
         private Tree() { }
 
         public int SumMetada()
         {
-            return Root.SumMetada();
+            return root.SumMetada();
         }
 
         public int Value()
         {
-            return Root.Value();
+            return root.Value();
         }
 
         public static Tree Load(int[] input)
         {
             int i = 0;
             Tree tree = new Tree();
-            tree.Root = Node.Load(ref i, input);
+            tree.root = Node.Load(ref i, input);
             return tree;
         }
     }
