@@ -64,6 +64,21 @@ namespace AdventOfCode.Day12
             "..#.."
         };
 
+        static int CalculateValue(string currentState, int expandedLength)
+        {
+            int result = 0;
+            int firstPlanIndex = currentState.IndexOf('#');
+            int lastPlanIndex = currentState.LastIndexOf('#');
+            for (int i = firstPlanIndex; i <= lastPlanIndex; i++)
+            {
+                if (currentState[i] == '#')
+                {
+                    result += i - expandedLength;
+                }
+            }
+            return result;
+        }
+
         static void Main(string[] args)
         {
             //HashSet<string> rules = TEST_RULE_SET;
@@ -72,17 +87,16 @@ namespace AdventOfCode.Day12
             HashSet<string> rules = RULE_SET;
             string initialState = INITIAL_STATE;
 
-            int expandedLength = (int)(initialState.Length * 0.5);
+            int expandedLength = (int)(initialState.Length * 10000);
 
             string currentState = new string('.', expandedLength) + initialState + new string('.', expandedLength);
 
-            Console.WriteLine(currentState);
-
             int maxIteration = 20;
-            for (int t = 0; t < maxIteration; t++)
+            List<int> results = new List<int>();
+            for (int t = 1; t <= maxIteration; t++)
             {
-                List<int> plantIndices = new List<int>();   
-                
+                List<int> plantIndices = new List<int>();
+                                
                 int start = Math.Max(0, currentState.IndexOf('#') - 4);
                 int end = Math.Min(currentState.Length, currentState.LastIndexOf('#') + 4);
 
@@ -102,23 +116,19 @@ namespace AdventOfCode.Day12
                 }
                 currentState = new string(stateArray);
 
-                Console.WriteLine(currentState);                                
-            }
-                        
-            Console.WriteLine(currentState);
-
-            int result = 0;
-            int firstPlanIndex = currentState.IndexOf('#');
-            int lastPlanIndex = currentState.LastIndexOf('#');
-            for (int i = firstPlanIndex; i <= lastPlanIndex; i++)
-            {
-                if (currentState[i] == '#')
+                if (t % 10 == 0)
                 {
-                    result += i - expandedLength;
-                }
+                    results.Add(CalculateValue(currentState, expandedLength));
+                }                
             }
 
-            Console.WriteLine(result);
+            List<int> diffs = new List<int>();
+            for (int i = 1; i < results.Count; i++)
+            {
+                diffs.Add(results[i] - results[i - 1]);
+            }
+
+            Console.WriteLine(CalculateValue(currentState, expandedLength));
         }
     }
 }
